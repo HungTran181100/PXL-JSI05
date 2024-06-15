@@ -1,5 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
 import {
+  onAuthStateChanged,
+  auth,
+  firebaseConfig,
+  signOut,
+} from "./firebase.js";
+import {
   getFirestore,
   collection,
   addDoc,
@@ -8,20 +14,16 @@ import {
   doc,
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyANqhq6YAgtLcPxk110IMW4kZHFZlDeFDs",
-  authDomain: "pxl-jsi05-demo.firebaseapp.com",
-  projectId: "pxl-jsi05-demo",
-  storageBucket: "pxl-jsi05-demo.appspot.com",
-  messagingSenderId: "231382838574",
-  appId: "1:231382838574:web:f5453a825a5ba3d62c5ebf",
-};
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const form = document.getElementById("form");
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "./Login.html";
+  }
+});
+
+const form = document.getElementById("formTitle");
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -40,7 +42,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-const output = document.getElementById("output");
+const output = document.getElementById("showTitle");
 
 async function getData() {
   output.innerHTML = "";
@@ -54,11 +56,24 @@ async function getData() {
   });
 }
 
+const btnLogout = document.getElementById("logout");
+btnLogout.addEventListener("click", () => {
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      window.location.href = "./Login.html";
+    })
+    .catch((error) => {
+      // An error happened.
+      console.error(error);
+    });
+});
+
 window.deleteData = async function (id) {
   try {
     await deleteDoc(doc(db, "PXL-JSI05", id));
-    console.log("Delete Success");
     getData();
+    console.log("Delete Success");
   } catch (error) {
     console.error(error);
   }

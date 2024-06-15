@@ -22,6 +22,7 @@ const auth = getAuth();
 export {
   app,
   auth,
+  firebaseConfig,
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
